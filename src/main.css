@@ -1,0 +1,20 @@
+/* В main.css или глобальных стилях */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.day-cell {
+  @apply min-h-20 p-2 border rounded-lg transition-all duration-200;
+}
+
+.day-cell:hover {
+  @apply transform scale-105 shadow-md;
+}
+
+.task-item {
+  @apply flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer;
+}
+
+.completed-task {
+  @apply line-through text-gray-500;
+}

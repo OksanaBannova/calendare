@@ -1,121 +1,253 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React, { useEffect, useState } from "react";
+import Header from "./components/Header";
+import Calendar from "./components/Calendar";
+import Notebook from "./components/Notebook";
+import "./styles.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+const STORAGE_KEY = "wall-calendar-app";
+
+const loadState = () => {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+};
+
+const saveState = (state) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+};
+
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) return "Доброе утро";
+  if (hour >= 12 && hour < 18) return "Добрый день";
+  if (hour >= 18 && hour < 23) return "Добрый вечер";
+  return "Доброй ночи";
+};
+
+export default function App() {
+  const [state, setState] = useState(() => {
+    const persisted = loadState();
+    if (persisted) return persisted;
+    return {
+      user: null,
+      days: {}
+    };
+  });
+
+  const today = new Date();
+  const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth()); // 0–11
+  const [openedDate, setOpenedDate] = useState(null); // 'YYYY-MM-DD' или null
+  const [searchDate, setSearchDate] = useState("");
+
+  useEffect(() => {
+    saveState(state);
+  }, [state]);
+
+  const handleSetUser = (user) => {
+    setState((prev) => ({ ...prev, user }));
+  };
+
+  const updateDayTasks = (dateKey, updater) => {
+    setState((prev) => {
+      const existing = prev.days[dateKey] || { date: dateKey, tasks: [] };
+      const updated = updater(existing);
+      return {
+        ...prev,
+        days: {
+          ...prev.days,
+          [dateKey]: updated
+        }
+      };
+    });
+  };
+
+  const toggleTaskDone = (dateKey, taskId) => {
+    updateDayTasks(dateKey, (day) => ({
+      ...day,
+      tasks: day.tasks.map((t) =>
+        t.id === taskId ? { ...t, done: !t.done } : t
+      )
+    }));
+  };
+
+  const addTask = (dateKey, text) => {
+    if (!text.trim()) return;
+    updateDayTasks(dateKey, (day) => ({
+      ...day,
+      tasks: [
+        ...day.tasks,
+        {
+          id: Date.now().toString() + Math.random().toString(16),
+          text: text.trim(),
+          done: false
+        }
+      ]
+    }));
+  };
+
+  // Подсчёт смайлика и цвета для дня
+  const updateSummaryForDate = (dateKey) => {
+    setState((prev) => {
+      const day = prev.days[dateKey];
+      if (!day || day.tasks.length === 0) return prev;
+
+      const total = day.tasks.length;
+      const done = day.tasks.filter((t) => t.done).length;
+      const percent = (done / total) * 100;
+
+      let summaryEmoji = "☹️";
+      let summaryColor = "red";
+
+      if (percent === 100) {
+        summaryEmoji = "😁";
+        summaryColor = "green";
+      } else if (percent >= 50 && percent <= 70) {
+        summaryEmoji = "😊";
+        summaryColor = "lightgreen";
+      } else if (percent >= 30 && percent <= 49) {
+        summaryEmoji = "😒";
+        summaryColor = "yellow";
+      } else {
+        summaryEmoji = "☹️";
+        summaryColor = "red";
+      }
+
+      return {
+        ...prev,
+        days: {
+          ...prev.days,
+          [dateKey]: {
+            ...day,
+            summaryEmoji,
+            summaryColor
+          }
+        }
+      };
+    });
+  };
+
+  const handleOpenNotebook = (dateKey) => {
+    setOpenedDate((prev) => (prev === dateKey ? null : dateKey));
+  };
+
+  const handleSearch = (value) => {
+    setSearchDate(value);
+    // если формат date input (YYYY-MM-DD),
+    // можно сразу открыть этот день и перелистать месяц:
+    if (value) {
+      const [y, m] = value.split("-");
+      const year = Number(y);
+      const month = Number(m) - 1;
+      if (!Number.isNaN(year) && !Number.isNaN(month)) {
+        setCurrentYear(year);
+        setCurrentMonth(month);
+        setOpenedDate(value);
+      }
+    }
+  };
+
+  const goToPrevMonth = () => {
+    setCurrentMonth((m) => {
+      if (m === 0) {
+        setCurrentYear((y) => y - 1);
+        return 11;
+      }
+      return m - 1;
+    });
+  };
+
+  const goToNextMonth = () => {
+    setCurrentMonth((m) => {
+      if (m === 11) {
+        setCurrentYear((y) => y + 1);
+        return 0;
+      }
+      return m + 1;
+    });
+  };
+
+  const greeting = state.user ? `${getGreeting()}, ${state.user.name}` : null;
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="app-root">
+      {!state.user && (
+        <div className="onboarding-overlay">
+          <UserForm onSubmit={handleSetUser} />
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      )}
 
-      <div className="ticks"></div>
+      {state.user && (
+        <>
+          <Header
+            greeting={greeting}
+            currentYear={currentYear}
+            currentMonth={currentMonth}
+            onPrevMonth={goToPrevMonth}
+            onNextMonth={goToNextMonth}
+            onSearch={handleSearch}
+          />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+          <Calendar
+            year={currentYear}
+            month={currentMonth}
+            days={state.days}
+            today={today}
+            openedDate={openedDate}
+            onOpenNotebook={handleOpenNotebook}
+            onUpdateSummary={updateSummaryForDate}
+          />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+          {openedDate && (
+            <Notebook
+              dateKey={openedDate}
+              day={state.days[openedDate]}
+              onClose={() => setOpenedDate(null)}
+              onAddTask={addTask}
+              onToggleTask={toggleTaskDone}
+            />
+          )}
+        </>
+      )}
+    </div>
+  );
 }
 
-export default App
+function UserForm({ onSubmit }) {
+  const [name, setName] = useState("");
+  const [birthday, setBirthday] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!name.trim() || !birthday) return;
+    onSubmit({ name: name.trim(), birthday });
+  };
+
+  return (
+    <form className="user-form" onSubmit={handleSubmit}>
+      <h2>Добро пожаловать!</h2>
+      <label>
+        Имя:
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+      </label>
+      <label>
+        Дата рождения:
+        <input
+          type="date"
+          value={birthday}
+          onChange={(e) => setBirthday(e.target.value)}
+          required
+        />
+      </label>
+      <button type="submit">Начать</button>
+    </form>
+  );
+}
