@@ -62,14 +62,39 @@ export default function App() {
   const [openedDate, setOpenedDate] = useState(null); // 'YYYY-MM-DD' или null
   const [searchDate, setSearchDate] = useState("");
 
+  // сохраняем состояние задач/фонов
   useEffect(() => {
     saveState(state);
   }, [state]);
 
+  // применяем тему
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem(THEME_KEY, theme);
   }, [theme]);
+
+  // слушаем смену темы системы
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const handleChange = (e) => {
+      setTheme(e.matches ? "dark" : "light");
+    };
+
+    if (mq.addEventListener) {
+      mq.addEventListener("change", handleChange);
+    } else if (mq.addListener) {
+      mq.addListener(handleChange);
+    }
+
+    return () => {
+      if (mq.removeEventListener) {
+        mq.removeEventListener("change", handleChange);
+      } else if (mq.removeListener) {
+        mq.removeListener(handleChange);
+      }
+    };
+  }, []);
 
   const handleSetUser = (user) => {
     setState((prev) => ({ ...prev, user }));
