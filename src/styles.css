@@ -687,3 +687,11 @@ body {
     border-radius: 18px;
   }
 }
+
+.search-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #4b5563;
+}

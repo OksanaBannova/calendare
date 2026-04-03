@@ -67,8 +67,15 @@ export default function Header({
       </div>
 
       <div className="search-block">
-        <input type="date" onChange={handleSearchChange} />
-      </div>
+  <label className="search-label">
+    Поиск по дате
+    <input
+      type="date"
+      onChange={handleSearchChange}
+      aria-label="Поиск по дате"
+    />
+  </label>
+</div>
     </header>
   );
 }
