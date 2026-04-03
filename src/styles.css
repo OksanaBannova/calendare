@@ -83,7 +83,43 @@ body {
   font-size: 14px;
   gap: 4px;
 }
+.month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;        /* не даём месяцу переноситься на новую строку */
+}
 
+.month-label {
+  font-weight: 600;
+  font-size: 16px;
+  min-width: 130px;
+  text-align: center;
+}
+
+.month-arrow {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(15, 23, 42, 0.08);
+  color: #111827;
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.12s ease, transform 0.12s ease, box-shadow 0.12s;
+}
+
+.month-arrow:hover {
+  background: rgba(37, 99, 235, 0.12);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2);
+}
 .user-form input[type="text"],
 .user-form input[type="date"] {
   padding: 9px 11px;
