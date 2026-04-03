@@ -6,6 +6,12 @@ import "./styles.css";
 
 const STORAGE_KEY = "wall-calendar-app";
 
+const initialState = {
+  user: null,
+  days: {},
+  customBackgrounds: {} // ключ: месяц (0–11), значение: dataURL
+};
+
 const loadState = () => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -30,11 +36,8 @@ const getGreeting = () => {
 export default function App() {
   const [state, setState] = useState(() => {
     const persisted = loadState();
-    if (persisted) return persisted;
-    return {
-      user: null,
-      days: {}
-    };
+    if (persisted) return { ...initialState, ...persisted };
+    return initialState;
   });
 
   const today = new Date();
@@ -89,7 +92,6 @@ export default function App() {
     }));
   };
 
-  // Подсчёт смайлика и цвета для дня
   const updateSummaryForDate = (dateKey) => {
     setState((prev) => {
       const day = prev.days[dateKey];
@@ -136,8 +138,6 @@ export default function App() {
 
   const handleSearch = (value) => {
     setSearchDate(value);
-    // если формат date input (YYYY-MM-DD),
-    // можно сразу открыть этот день и перелистать месяц:
     if (value) {
       const [y, m] = value.split("-");
       const year = Number(y);
@@ -170,6 +170,22 @@ export default function App() {
     });
   };
 
+  const handleUploadBackground = (monthIndex, file) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target.result;
+      setState((prev) => ({
+        ...prev,
+        customBackgrounds: {
+          ...prev.customBackgrounds,
+          [monthIndex]: dataUrl
+        }
+      }));
+    };
+    reader.readAsDataURL(file);
+  };
+
   const greeting = state.user ? `${getGreeting()}, ${state.user.name}` : null;
 
   return (
@@ -189,6 +205,7 @@ export default function App() {
             onPrevMonth={goToPrevMonth}
             onNextMonth={goToNextMonth}
             onSearch={handleSearch}
+            onUploadBackground={handleUploadBackground}
           />
 
           <Calendar
@@ -199,6 +216,7 @@ export default function App() {
             openedDate={openedDate}
             onOpenNotebook={handleOpenNotebook}
             onUpdateSummary={updateSummaryForDate}
+            customBackgrounds={state.customBackgrounds}
           />
 
           {openedDate && (

@@ -24,14 +24,16 @@ export default function Calendar({
   today,
   openedDate,
   onOpenNotebook,
-  onUpdateSummary
+  onUpdateSummary,
+  customBackgrounds
 }) {
   const firstDay = new Date(year, month, 1);
   const firstWeekDay = (firstDay.getDay() + 6) % 7; // понедельник = 0
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  const background = monthBackgrounds[month];
-
+  const defaultBackground = monthBackgrounds[month];
+  const customBg = customBackgrounds?.[month];
+  const background = customBg || defaultBackground;
   const cells = [];
   for (let i = 0; i < firstWeekDay; i++) {
     cells.push(<div key={`empty-${i}`} className="day-cell empty" />);
@@ -56,31 +58,34 @@ export default function Calendar({
     );
   }
 
-  return (
-    <div
-      className="calendar"
-      style={{
-        backgroundImage: `url(${background})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center"
-      }}
-    >
-      <div className="calendar-overlay" />
-      <div className="calendar-inner">
-        <div className="calendar-header">
-          {/* Заголовок месяца теперь в Header */}
-          <div className="weekdays">
-            <span>Пн</span>
-            <span>Вт</span>
-            <span>Ср</span>
-            <span>Чт</span>
-            <span>Пт</span>
-            <span>Сб</span>
-            <span>Вс</span>
-          </div>
-        </div>
-        <div className="calendar-grid">{cells}</div>
-      </div>
+    return (
+    <div className="app-root">
+      {/* ... */}
+      {state.user && (
+        <>
+          <Header
+            greeting={greeting}
+            currentYear={currentYear}
+            currentMonth={currentMonth}
+            onPrevMonth={goToPrevMonth}
+            onNextMonth={goToNextMonth}
+            onSearch={handleSearch}
+            onUploadBackground={handleUploadBackground}
+          />
+
+          <Calendar
+            year={currentYear}
+            month={currentMonth}
+            days={state.days}
+            today={today}
+            openedDate={openedDate}
+            onOpenNotebook={handleOpenNotebook}
+            onUpdateSummary={updateSummaryForDate}
+            customBackgrounds={state.customBackgrounds}
+          />
+          {/* ... */}
+        </>
+      )}
     </div>
   );
 }
