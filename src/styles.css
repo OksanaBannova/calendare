@@ -15,6 +15,22 @@
   --notebook-lines-color: rgba(148, 163, 184, 0.45);
   --today-color: #1d4ed8;
   --today-bg: #ffffff;
+
+  --bg-body: #f5f7fa;
+  --bg-gradient-top: #e3f2fd;
+  --bg-gradient-bottom: #fce4ec;
+  --text-main: #111827;
+  --card-bg: #ffffff;
+  --calendar-overlay: rgba(255, 255, 255, 0.6);
+}
+
+:root[data-theme="dark"] {
+  --bg-body: #020617;
+  --bg-gradient-top: #0f172a;
+  --bg-gradient-bottom: #1e293b;
+  --text-main: #e5e7eb;
+  --card-bg: #020617;
+  --calendar-overlay: rgba(15, 23, 42, 0.7);
 }
 
 html,
@@ -28,10 +44,10 @@ body {
   font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
   background:
-    radial-gradient(circle at 0% 0%, #e3f2fd 0, transparent 55%),
-    radial-gradient(circle at 100% 100%, #fce4ec 0, transparent 55%),
-    linear-gradient(135deg, #f5f7fa, #e5e9f2);
-  color: #111827;
+    radial-gradient(circle at 0% 0%, var(--bg-gradient-top) 0, transparent 55%),
+    radial-gradient(circle at 100% 100%, var(--bg-gradient-bottom) 0, transparent 55%),
+    var(--bg-body);
+  color: var(--text-main);
 }
 
 /* Корневой контейнер приложения */
@@ -45,12 +61,13 @@ body {
   padding: 20px 16px 32px;
 }
 
-/* ===== ОНБОРДИНГ (ФОРМА ИМЕНИ И ДР) ===== */
+/* ===== ОНБОРДИНГ ===== */
 
 .onboarding-overlay {
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at 10% 0, rgba(59, 130, 246, 0.35), transparent 55%),
+  background:
+    radial-gradient(circle at 10% 0, rgba(59, 130, 246, 0.35), transparent 55%),
     radial-gradient(circle at 90% 100%, rgba(236, 72, 153, 0.35), transparent 55%),
     rgba(15, 23, 42, 0.65);
   display: flex;
@@ -69,6 +86,11 @@ body {
   flex-direction: column;
   gap: 14px;
   backdrop-filter: blur(10px);
+}
+
+:root[data-theme="dark"] .user-form {
+  background: rgba(15, 23, 42, 0.95);
+  color: #e5e7eb;
 }
 
 .user-form h2 {
@@ -124,7 +146,7 @@ body {
   opacity: 0.9;
 }
 
-/* ===== HEADER (ПРИВЕТСТВИЕ + ПОИСК + МЕСЯЦ) ===== */
+/* ===== HEADER ===== */
 
 .app-header {
   width: 100%;
@@ -142,12 +164,14 @@ body {
   backdrop-filter: blur(8px);
 }
 
+:root[data-theme="dark"] .app-header {
+  background: rgba(15, 23, 42, 0.9);
+}
+
 .greeting {
   font-size: 18px;
   font-weight: 600;
 }
-
-/* навигация по месяцам и кнопка смены фона */
 
 .month-nav {
   display: flex;
@@ -205,7 +229,20 @@ body {
   border-color: #2563eb;
 }
 
-/* поиск по дате */
+/* поиск */
+
+.search-block {
+  display: flex;
+  align-items: center;
+}
+
+.search-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #4b5563;
+}
 
 .search-block input[type="date"] {
   padding: 6px 11px;
@@ -224,7 +261,7 @@ body {
   box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
 }
 
-/* ===== КАЛЕНДАРЬ (ЛИСТ НА СТЕНЕ) ===== */
+/* ===== КАЛЕНДАРЬ ===== */
 
 .calendar {
   width: 100%;
@@ -238,24 +275,20 @@ body {
     0 1px 0 rgba(255, 255, 255, 0.6) inset;
 }
 
-/* размытый фон с фотографией */
-
 .calendar::before {
   content: "";
   position: absolute;
   inset: 0;
   background: inherit;
-  filter: blur(3px);
-  transform: scale(1.03);
+  filter: blur(0.5px);
+  transform: scale(1.01);
   z-index: 0;
 }
-
-/* полупрозрачная бумага поверх фото */
 
 .calendar-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--calendar-overlay);
   z-index: 1;
 }
 
@@ -265,8 +298,6 @@ body {
   padding: 18px 20px 22px;
   backdrop-filter: blur(4px);
 }
-
-/* Заголовок и дни недели */
 
 .calendar-header {
   display: flex;
@@ -291,8 +322,6 @@ body {
 .weekdays span {
   padding: 4px 0;
 }
-
-/* Сетка дней */
 
 .calendar-grid {
   display: grid;
@@ -320,6 +349,11 @@ body {
   overflow: hidden;
 }
 
+:root[data-theme="dark"] .day-cell {
+  background: rgba(15, 23, 42, 0.9);
+  color: #e5e7eb;
+}
+
 .day-cell:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
@@ -342,15 +376,11 @@ body {
     0 10px 20px rgba(37, 99, 235, 0.4);
 }
 
-/* когда открыт блокнот */
-
 .day-cell.open {
   box-shadow:
     0 0 0 2px rgba(37, 99, 235, 0.6),
     0 10px 24px rgba(15, 23, 42, 0.25);
 }
-
-/* номер дня */
 
 .day-number {
   font-size: 18px;
@@ -358,8 +388,6 @@ body {
   margin-bottom: 4px;
   color: #111827;
 }
-
-/* индикатор (! или смайлик) */
 
 .indicator {
   position: absolute;
@@ -378,15 +406,13 @@ body {
   font-size: 20px;
 }
 
-/* процент выполненных задач */
-
 .percent-label {
   margin-top: auto;
   font-size: 11px;
   color: #6b7280;
 }
 
-/* ===== БЛОКНОТ (NOTEBOOK) ===== */
+/* ===== NOTEBOOK ===== */
 
 .notebook-overlay {
   position: fixed;
@@ -400,8 +426,6 @@ body {
   justify-content: center;
   z-index: 200;
 }
-
-/* анимация появления */
 
 @keyframes notebookFlipIn {
   0% {
@@ -430,7 +454,10 @@ body {
   transform-origin: top center;
 }
 
-/* пружинка */
+:root[data-theme="dark"] .notebook {
+  background: #020617;
+  color: #e5e7eb;
+}
 
 .notebook-ring {
   position: absolute;
@@ -443,8 +470,6 @@ body {
   background-size: 18px 18px;
   background-repeat: repeat-x;
 }
-
-/* шапка блокнота */
 
 .notebook-header {
   display: flex;
@@ -474,8 +499,6 @@ body {
   transform: scale(1.03);
 }
 
-/* линии */
-
 .notebook-lines {
   flex: 1;
   overflow-y: auto;
@@ -495,10 +518,9 @@ body {
   grid-template-columns: 26px 26px 1fr;
   align-items: center;
   font-size: 14px;
-  min-height: 22px;
+  min-height: 26px;
+  padding-bottom: 1px;
 }
-
-/* номер строки */
 
 .line-number {
   text-align: right;
@@ -507,11 +529,9 @@ body {
   font-size: 12px;
 }
 
-/* чекбокс */
-
 .checkbox {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 4px;
   border: 1px solid #9ca3af;
   background: linear-gradient(145deg, #ffffff, #e5e7eb);
@@ -532,8 +552,6 @@ body {
   box-shadow: 0 1px 3px rgba(22, 163, 74, 0.4);
 }
 
-/* текст задачи */
-
 .task-text {
   font-size: 14px;
   padding: 2px 0 2px 2px;
@@ -544,8 +562,6 @@ body {
   text-decoration: line-through;
   color: #9ca3af;
 }
-
-/* форма добавления задачи */
 
 .notebook-input {
   display: flex;
@@ -560,6 +576,7 @@ body {
   border: 1px solid #d1d5db;
   font-size: 14px;
   background: #f9fafb;
+  color: #111827; /* чтобы текст не был белым */
   transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s;
 }
 
@@ -598,10 +615,6 @@ body {
 @media (max-width: 768px) {
   .calendar-inner {
     padding: 14px 12px 16px;
-  }
-
-  .calendar-header h1 {
-    font-size: 20px;
   }
 
   .weekdays {
@@ -682,16 +695,13 @@ body {
     border-radius: 12px;
   }
 
+  .notebook-line {
+    grid-template-columns: 22px 22px 1fr;
+    font-size: 13px;
+  }
+
   .user-form {
     width: 90%;
     border-radius: 18px;
   }
-}
-
-.search-label {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 12px;
-  color: #4b5563;
 }

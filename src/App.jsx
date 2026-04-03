@@ -5,6 +5,7 @@ import Notebook from "./components/Notebook";
 import "./styles.css";
 
 const STORAGE_KEY = "wall-calendar-app";
+const THEME_KEY = "wall-calendar-theme";
 
 const initialState = {
   user: null,
@@ -25,6 +26,19 @@ const saveState = (state) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 };
 
+const getInitialTheme = () => {
+  try {
+    const stored = localStorage.getItem(THEME_KEY);
+    if (stored === "light" || stored === "dark") return stored;
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    return prefersDark ? "dark" : "light";
+  } catch {
+    return "light";
+  }
+};
+
 const getGreeting = () => {
   const hour = new Date().getHours();
   if (hour >= 5 && hour < 12) return "Доброе утро";
@@ -40,6 +54,8 @@ export default function App() {
     return initialState;
   });
 
+  const [theme, setTheme] = useState(getInitialTheme);
+
   const today = new Date();
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [currentMonth, setCurrentMonth] = useState(today.getMonth()); // 0–11
@@ -49,6 +65,11 @@ export default function App() {
   useEffect(() => {
     saveState(state);
   }, [state]);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem(THEME_KEY, theme);
+  }, [theme]);
 
   const handleSetUser = (user) => {
     setState((prev) => ({ ...prev, user }));
@@ -247,6 +268,7 @@ function UserForm({ onSubmit }) {
   return (
     <form className="user-form" onSubmit={handleSubmit}>
       <h2>Добро пожаловать!</h2>
+
       <label>
         Имя:
         <input
@@ -256,6 +278,7 @@ function UserForm({ onSubmit }) {
           required
         />
       </label>
+
       <label>
         Дата рождения:
         <input
@@ -265,6 +288,7 @@ function UserForm({ onSubmit }) {
           required
         />
       </label>
+
       <button type="submit">Начать</button>
     </form>
   );
