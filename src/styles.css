@@ -83,59 +83,7 @@ body {
   font-size: 14px;
   gap: 4px;
 }
-.month-nav {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  white-space: nowrap;        /* не даём месяцу переноситься на новую строку */
-}
 
-.month-label {
-  font-weight: 600;
-  font-size: 16px;
-  min-width: 130px;
-  text-align: center;
-}
-
-.month-arrow {
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
-  border: none;
-  background: rgba(15, 23, 42, 0.08);
-  color: #111827;
-  font-size: 18px;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  transition: background 0.12s ease, transform 0.12s ease, box-shadow 0.12s;
-}
-.bg-upload-button {
-  padding: 4px 10px;
-  margin-left: 8px;
-  border-radius: 999px;
-  border: 1px dashed rgba(37, 99, 235, 0.6);
-  font-size: 12px;
-  color: #1d4ed8;
-  background: rgba(219, 234, 254, 0.5);
-  cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
-}
-
-.bg-upload-button:hover {
-  background: rgba(59, 130, 246, 0.12);
-  color: #1d4ed8;
-  border-color: #2563eb;
-}
-.month-arrow:hover {
-  background: rgba(37, 99, 235, 0.12);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2);
-}
 .user-form input[type="text"],
 .user-form input[type="date"] {
   padding: 9px 11px;
@@ -176,7 +124,7 @@ body {
   opacity: 0.9;
 }
 
-/* ===== HEADER (ПРИВЕТСТВИЕ + ПОИСК) ===== */
+/* ===== HEADER (ПРИВЕТСТВИЕ + ПОИСК + МЕСЯЦ) ===== */
 
 .app-header {
   width: 100%;
@@ -199,12 +147,73 @@ body {
   font-weight: 600;
 }
 
+/* навигация по месяцам и кнопка смены фона */
+
+.month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.month-label {
+  font-weight: 600;
+  font-size: 16px;
+  min-width: 130px;
+  text-align: center;
+}
+
+.month-arrow {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(15, 23, 42, 0.08);
+  color: #111827;
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.12s ease, transform 0.12s ease, box-shadow 0.12s;
+}
+
+.month-arrow:hover {
+  background: rgba(37, 99, 235, 0.12);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2);
+}
+
+.bg-upload-button {
+  padding: 4px 10px;
+  margin-left: 8px;
+  border-radius: 999px;
+  border: 1px dashed rgba(37, 99, 235, 0.6);
+  font-size: 12px;
+  color: #1d4ed8;
+  background: rgba(219, 234, 254, 0.5);
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+
+.bg-upload-button:hover {
+  background: rgba(59, 130, 246, 0.12);
+  color: #1d4ed8;
+  border-color: #2563eb;
+}
+
+/* поиск по дате */
+
 .search-block input[type="date"] {
   padding: 6px 11px;
   border-radius: 999px;
   border: 1px solid #d1d5db;
   font-size: 14px;
-  background: #f9fafb;
+  background: #eef2ff;
+  color: #111827;
   transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s;
 }
 
@@ -229,22 +238,24 @@ body {
     0 1px 0 rgba(255, 255, 255, 0.6) inset;
 }
 
-/* Размытый фон с фотографией */
+/* размытый фон с фотографией */
+
 .calendar::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: inherit; /* фоновая картинка из inline style Calendar.jsx */
+  background: inherit;
   filter: blur(3px);
   transform: scale(1.03);
   z-index: 0;
 }
 
-/* Полупрозрачный белый слой — «бумага» 50% прозрачности поверх фото */
+/* полупрозрачная бумага поверх фото */
+
 .calendar-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.6);
   z-index: 1;
 }
 
@@ -255,20 +266,13 @@ body {
   backdrop-filter: blur(4px);
 }
 
-/* Заголовок календаря и названия дней недели */
+/* Заголовок и дни недели */
 
 .calendar-header {
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-bottom: 10px;
-}
-
-.calendar-header h1 {
-  margin: 0;
-  font-size: 24px;
-  text-align: center;
-  letter-spacing: 0.03em;
 }
 
 .weekdays {
@@ -301,7 +305,7 @@ body {
 .day-cell {
   position: relative;
   border-radius: 12px;
-  border: 1px solid rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(15, 23, 42, 0.12);
   background: rgba(255, 255, 255, 0.94);
   min-height: 76px;
   padding: 6px 8px;
@@ -338,7 +342,7 @@ body {
     0 10px 20px rgba(37, 99, 235, 0.4);
 }
 
-/* Когда открыт блокнот — подсветка */
+/* когда открыт блокнот */
 
 .day-cell.open {
   box-shadow:
@@ -346,15 +350,16 @@ body {
     0 10px 24px rgba(15, 23, 42, 0.25);
 }
 
-/* Номер дня */
+/* номер дня */
 
 .day-number {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 4px;
+  color: #111827;
 }
 
-/* Индикатор (! или смайлик) */
+/* индикатор (! или смайлик) */
 
 .indicator {
   position: absolute;
@@ -373,7 +378,7 @@ body {
   font-size: 20px;
 }
 
-/* Процент выполненных задач */
+/* процент выполненных задач */
 
 .percent-label {
   margin-top: auto;
@@ -396,7 +401,7 @@ body {
   z-index: 200;
 }
 
-/* Анимация «перелистывания» при появлении */
+/* анимация появления */
 
 @keyframes notebookFlipIn {
   0% {
@@ -425,7 +430,7 @@ body {
   transform-origin: top center;
 }
 
-/* Пружинка сверху */
+/* пружинка */
 
 .notebook-ring {
   position: absolute;
@@ -439,7 +444,7 @@ body {
   background-repeat: repeat-x;
 }
 
-/* Шапка блокнота */
+/* шапка блокнота */
 
 .notebook-header {
   display: flex;
@@ -469,7 +474,7 @@ body {
   transform: scale(1.03);
 }
 
-/* Область с линиями */
+/* линии */
 
 .notebook-lines {
   flex: 1;
@@ -485,18 +490,15 @@ body {
   background-size: 100% 22px;
 }
 
-/* Одна строка блокнота */
-
 .notebook-line {
   display: grid;
   grid-template-columns: 26px 26px 1fr;
   align-items: center;
   font-size: 14px;
   min-height: 22px;
-  border-bottom: none;
 }
 
-/* Номер строки слева */
+/* номер строки */
 
 .line-number {
   text-align: right;
@@ -505,7 +507,7 @@ body {
   font-size: 12px;
 }
 
-/* Чекбокс */
+/* чекбокс */
 
 .checkbox {
   width: 18px;
@@ -530,7 +532,7 @@ body {
   box-shadow: 0 1px 3px rgba(22, 163, 74, 0.4);
 }
 
-/* Текст задачи */
+/* текст задачи */
 
 .task-text {
   font-size: 14px;
@@ -543,7 +545,7 @@ body {
   color: #9ca3af;
 }
 
-/* Форма добавления задачи */
+/* форма добавления задачи */
 
 .notebook-input {
   display: flex;
@@ -633,6 +635,26 @@ body {
   .app-header {
     align-items: flex-start;
     padding: 8px 10px;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .greeting {
+    width: 100%;
+  }
+
+  .month-nav {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .search-block {
+    width: 100%;
+  }
+
+  .search-block input[type="date"] {
+    width: 100%;
+    background: #e0f2fe;
   }
 
   .calendar-inner {
@@ -641,6 +663,18 @@ body {
 
   .day-cell {
     min-height: 54px;
+    padding: 4px 5px;
+    border-color: rgba(15, 23, 42, 0.2);
+  }
+
+  .day-number {
+    font-size: 15px;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  }
+
+  .indicator.emoji,
+  .indicator.exclamation {
+    font-size: 16px;
   }
 
   .notebook {
@@ -651,22 +685,5 @@ body {
   .user-form {
     width: 90%;
     border-radius: 18px;
-  }
-}
-@media (max-width: 480px) {
-  .day-cell {
-    min-height: 54px;
-    padding: 4px 5px;
-  }
-
-  .day-number {
-    font-size: 15px;
-    color: #111827; /* тёмный текст */
-    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8); /* подсветка поверх светлого фона */
-  }
-
-  .indicator.emoji,
-  .indicator.exclamation {
-    font-size: 16px;
   }
 }
