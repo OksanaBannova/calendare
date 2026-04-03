@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import Calendar from "./components/Calendar";
 import Notebook from "./components/Notebook";
 import "./styles.css";
+import { loadCalendarState, saveCalendarState } from "./api/calendarApi";
 
 const STORAGE_KEY = "wall-calendar-app";
 const THEME_KEY = "wall-calendar-theme";
@@ -53,6 +54,11 @@ export default function App() {
     if (persisted) return { ...initialState, ...persisted };
     return initialState;
   });
+  // простейший userId — комбинация имени и даты рождения
+const userId =
+  state.user && state.user.name && state.user.birthday
+    ? `${state.user.name}_${state.user.birthday}`
+    : null;
 
   const [theme, setTheme] = useState(getInitialTheme);
 
